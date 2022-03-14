@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bike.mapper.RentMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.bike.entity.Rent">
+                <id column="id" property="id" />
+                <result column="user_id" property="userId" />
+                <result column="title" property="title" />
+                <result column="start_at" property="startAt" />
+                <result column="end_at" property="endAt" />
+                <result column="need_money" property="needMoney" />
+    </resultMap>
+
+    <select id="findAll" resultType="com.bike.dto.RentDto">
+        select r.id, r.user_id, r.title, r.start_at, r.end_at, u.name as `user`,
+            case
+                when r.need_money = 0 then '无偿'
+                when r.need_money = 1 then '有偿'
+            end as `type`,
+            case
+                when o.status = 0 then '进行中'
+                when o.status = 1 then '已完成'
+                else '未下单'
+            end as status
+        from rent r
+        left join `order` o on o.rent_id = r.id
+        inner join `user` u on r.user_id = u.id
+    </select>
+</mapper>
